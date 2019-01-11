@@ -36,41 +36,48 @@ public class pig_v2 {
 	}
 	
 	public static int start_round(int round, int user_score, int cmp_score, boolean type) {
+		System.out.println("\nHit any key to start round " + round);
+		scan.nextLine();
 		System.out.println("\n-- Round " + round + " --");
-		System.out.println("User: " + user_score + " - " + "Computer: " + cmp_score );
-		if (type) System.out.println("\nYour turn:\n"); else System.out.println("\nComputer turn: \n");
+		System.out.println("User: " + user_score + " -- " + "Computer: " + cmp_score );
+		if (type) System.out.println("\nYour turn:\n"); else System.out.println("\nComputer's turn: \n");
 
 		int turn_result = type ? turn(0, user_score, type) : turn(0, cmp_score, type);
 		return turn_result;
 	}
 	
 	public static int turn(int turn_score, int game_score, boolean type) {
+		int[] roll = roll();
+		if (turn_score >= 100) {
+			return turn_score;
+		} else if (roll[0] == 1 & roll[1] == 1) {
+			turn_score = turn_score + 25;
+			return turn(turn_score, game_score, type);
+		} else if (roll[0] == 1 ^ roll[1] == 1) {
+			return 0;
+		} else if (roll[0] == roll[1]) {
+			turn_score = turn_score + 2*(roll[2]);
+			return turn(turn_score, game_score, type);
+		} else {
+			turn_score = turn_score + roll[2];
+			boolean choice = type ? choice(turn_score, game_score) : rand_choice();
+			return choice ? turn(turn_score, game_score, type) : turn_score;
+		}
+	}
+	
+	public static int[] roll() {
 		int roll_1 = rand_num();
 		int roll_2 = rand_num();
 		int sum = roll_1 + roll_2;
+		int[] results = new int[] {roll_1, roll_2, sum};
 		System.out.println("Roll: " + roll_1 + " and " + roll_2);
-		
-		if (turn_score >= 100) {
-			return turn_score;
-		} else if (roll_1 == 1 & roll_2 == 1) {
-			turn_score = turn_score + 25;
-			return turn(turn_score, game_score, type);
-		} else if (roll_1 == 1 ^ roll_2 == 1) {
-			return 0;
-		} else if (roll_1 == roll_2) {
-			turn_score = turn_score + 2*(sum);
-			return turn(turn_score, game_score, type);
-		} else {
-			turn_score = turn_score + sum;
-			boolean choice = type ? choice(turn_score, game_score) : rand_choice();
-			return choice ? turn_score : turn(turn_score, game_score, type);
-		}
+		return results;	
 	}
 	
 	public static boolean choice(int turn_score, int game_score) {
 		System.out.println("Game: " + game_score + " - Turn: " + turn_score + ". roll again? type y (yes) or other (no).");
 		String choice = scan.nextLine();
-		return !choice.equals("y");
+		return choice.equals("y");
 	}
 	
 }
